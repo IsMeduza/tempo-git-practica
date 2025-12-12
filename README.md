@@ -335,9 +335,247 @@ README.md  fitDev1.txt  fitDev2.txt  fitxerMain1.txt  fitxerMain2.txt  index.htm
 - **Què ha passat amb les branques feature i develop?** La branca feature s'ha fusionat a develop mitjançant un merge commit (8e4eb65). Ara develop conté tots els fitxers de la feature, incloent index.html. La branca feature s'ha eliminat tant a GitHub com localment, ja que la seva funcionalitat ja està integrada a develop.
 - **Conceptualment, quan crees una PR és perquè has acabat la teua tasca a la branca feature.** Sí, exactament. Una vegada que la feature està completada i revisada, es fusiona a develop i s'elimina, mantenint el repositori net i organitzat segons el flux de treball Git Flow.
 
+## Part 3: Part Comú - Treball Col·laboratiu
+
+### 5-7. Crear branques feature diferents i resoldre conflictes
+
+#### Accions realitzades:
+- Creació de dues branques feature diferents (feature-Membre1 i feature-Membre2)
+- Modificació del mateix fitxer (fitDev1.txt) per cada membre
+- Resolució de conflictes segons instruccions específiques
+
+#### Creació de branques feature:
+```bash
+# Membre 1 crea la seva feature
+$ git checkout develop
+$ git checkout -b feature-Membre1
+# Modifica fitDev1.txt afegint 10 línies
+# Les línies 3 i 7 són iguals en totes dues features
+$ git add fitDev1.txt
+$ git commit -m "Modificat fitDev1.txt per Membre1"
+$ git push -u origin feature-Membre1
+
+# Membre 2 crea la seva feature (des de develop abans del merge de Membre1)
+$ git checkout develop
+$ git checkout -b feature-Membre2
+# Modifica fitDev1.txt afegint 10 línies diferents
+# Les línies 3 i 7 són iguals (comú)
+$ git add fitDev1.txt
+$ git commit -m "Modificat fitDev1.txt per Membre2"
+$ git push -u origin feature-Membre2
+```
+
+#### Resolució de conflictes:
+```bash
+# Primer: Merge de feature-Membre1 (sense conflictes)
+$ git checkout develop
+$ git merge feature-Membre1
+Updating 51a7874..6eff6e7
+Fast-forward
+ fitDev1.txt | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+$ git push origin develop
+
+# Segon: Merge de feature-Membre2 (amb conflictes)
+$ git merge feature-Membre2
+Auto-merging fitDev1.txt
+CONFLICT (content): Merge conflict in fitDev1.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+# Resoldre conflictes segons instruccions:
+# - Primer conflicte (línies 1-2): Acceptar codi de Membre1
+# - Segon conflicte (línies 4-6): Acceptar codi de Membre2
+# - Tercer conflicte (línies 8-10): Acceptar codi de totes dues
+
+$ git add fitDev1.txt
+$ git commit -m "Resolució de conflictes: combinat canvis de Membre1 i Membre2"
+$ git push origin develop
+```
+
+**Resultat:**
+- Les línies 3 i 7 (comuns) no generen conflicte
+- Les línies diferents generen conflictes que s'han resolt combinant ambdues versions
+- El fitxer final conté elements de totes dues features
+
+### 8. Crear branca release i tag
+
+#### Accions realitzades:
+- Creació de branca release des de develop
+- Creació de tag v1.0 per identificar la versió
+- Merge de release a main i develop
+
+#### Creació de release:
+```bash
+$ git checkout develop
+$ git checkout -b release-v1.0
+$ git push -u origin release-v1.0
+
+# Crear tag
+$ git tag -a v1.0 -m "Versió 1.0 - Release inicial"
+$ git push origin v1.0
+```
+
+#### Merge de release a main i develop:
+```bash
+# Merge a main
+$ git checkout master
+$ git merge release-v1.0
+Updating 86e2ba1..be84232
+Fast-forward
+ README.md   | 337 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ fitDev1.txt |  13 +++
+ fitDev2.txt |  0
+ index.html  |  0
+ 4 files changed, 350 insertions(+)
+
+$ git push origin master
+
+# Merge a develop
+$ git checkout develop
+$ git merge release-v1.0
+Already up to date.
+$ git push origin develop
+```
+
+**Resultat:**
+- Tag v1.0 creat i pujat a GitHub
+- Release mergejat tant a main com a develop
+- Main ara conté tots els canvis de develop
+
+### 9. Incorporar canvis amb rebase
+
+#### Accions realitzades:
+- Creació de dues noves branques feature (feature-MembreA i feature-MembreB)
+- Merge de feature-MembreA a develop
+- Incorporació de canvis de develop a feature-MembreB mitjançant rebase
+
+#### Crear branques feature:
+```bash
+# Membre A crea feature
+$ git checkout develop
+$ git checkout -b feature-MembreA
+$ touch fitxerMembreA.txt
+$ git add fitxerMembreA.txt
+$ git commit -m "Afegit fitxer de Membre A"
+$ git push -u origin feature-MembreA
+
+# Membre B crea feature
+$ git checkout develop
+$ git checkout -b feature-MembreB
+$ touch fitxerMembreB.txt
+$ git add fitxerMembreB.txt
+$ git commit -m "Afegit fitxer de Membre B"
+```
+
+#### Merge de MembreA i rebase de MembreB:
+```bash
+# Merge de feature-MembreA a develop
+$ git checkout develop
+$ git merge feature-MembreA
+Updating be84232..5a9a06c
+Fast-forward
+ fitxerMembreA.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+$ git push origin develop
+
+# Membre B incorpora canvis amb rebase
+$ git checkout feature-MembreB
+$ git pull origin develop  # Actualitzar develop local
+$ git rebase develop
+Rebasing (1/1)
+Successfully rebased and updated refs/heads/feature-MembreB
+```
+
+#### Comprovació del rebase:
+```bash
+$ git log --oneline --graph
+* 229b67c Afegit fitxer de Membre B
+* 5a9a06c Afegit fitxer de Membre A
+* be84232 Resolució de conflictes: combinat canvis de Membre1 i Membre2
+...
+```
+
+**Resultat:**
+- El commit de MembreB apareix després del commit de MembreA
+- L'historial és lineal (sense merge commits)
+- feature-MembreB ara conté els canvis de develop (fitxerMembreA.txt)
+
+**Diferència entre merge i rebase:**
+- **Merge:** Crea un commit de merge, mantenint l'historial paral·lel
+- **Rebase:** Reaplica els commits sobre la branca base, creant un historial lineal
+
+### 10. Crear branca hotfix
+
+#### Accions realitzades:
+- Creació de branca hotfix des de main
+- Realització de correcció urgent
+- Merge de hotfix tant a main com a develop
+
+#### Crear i aplicar hotfix:
+```bash
+# Crear hotfix des de main
+$ git checkout master
+$ git checkout -b hotfix-fix-urgent
+
+# Fer correcció urgent (ex: afegir nota al README)
+$ git add README.md
+$ git commit -m "Hotfix: correcció urgent al README"
+$ git push -u origin hotfix-fix-urgent
+
+# Merge a main
+$ git checkout master
+$ git merge hotfix-fix-urgent
+Updating be84232..acd0fe8
+Fast-forward
+ README.md | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+$ git push origin master
+
+# Merge a develop
+$ git checkout develop
+$ git merge hotfix-fix-urgent
+Merge made by the 'ort' strategy.
+ README.md | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+$ git push origin develop
+```
+
+**Resultat:**
+- Hotfix aplicat tant a main com a develop
+- La correcció urgent està disponible a totes dues branques
+- El flux Git Flow manté la sincronització entre main i develop
+
+**Importància del hotfix:**
+- Els hotfix s'han de mergear sempre a main i develop
+- Són correccions urgents que no poden esperar al proper release
+- Mantenen la consistència entre les branques principals
+
 ---
 
-## Hotfix aplicat
+## Resum Final
 
-**Nota:** Aquest hotfix s'ha aplicat per correcció urgent a la branca master i develop.
+### Branques creades:
+- `master`: Branca principal de producció
+- `develop`: Branca de desenvolupament
+- `feature-MenuLanding`: Feature inicial (ja eliminada)
+- `feature-Membre1`, `feature-Membre2`: Features amb conflictes resolts
+- `feature-MembreA`, `feature-MembreB`: Features per demostrar rebase
+- `release-v1.0`: Branca de release
+- `hotfix-fix-urgent`: Branca de hotfix
+
+### Tags creats:
+- `v1.0`: Versió 1.0 - Release inicial
+
+### Conceptes apresos:
+- Gestió de branques i canvis entre elles
+- Resolució de conflictes en merges
+- Pull Requests i flux de treball GitHub
+- Git Flow: feature, release, hotfix
+- Rebase vs Merge
+- Tags per versions
+- Treball col·laboratiu amb Git
 
