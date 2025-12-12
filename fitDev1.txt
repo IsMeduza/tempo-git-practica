@@ -1,0 +1,10 @@
+Línia 1 - Feature Membre 2
+Línia 2 - Feature Membre 2
+Línia 3 - COMÚ (igual en totes dues)
+Línia 4 - Feature Membre 2
+Línia 5 - Feature Membre 2
+Línia 6 - Feature Membre 2
+Línia 7 - COMÚ (igual en totes dues)
+Línia 8 - Feature Membre 2
+Línia 9 - Feature Membre 2
+Línia 10 - Feature Membre 2
