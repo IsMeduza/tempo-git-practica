@@ -335,3 +335,9 @@ README.md  fitDev1.txt  fitDev2.txt  fitxerMain1.txt  fitxerMain2.txt  index.htm
 - **Què ha passat amb les branques feature i develop?** La branca feature s'ha fusionat a develop mitjançant un merge commit (8e4eb65). Ara develop conté tots els fitxers de la feature, incloent index.html. La branca feature s'ha eliminat tant a GitHub com localment, ja que la seva funcionalitat ja està integrada a develop.
 - **Conceptualment, quan crees una PR és perquè has acabat la teua tasca a la branca feature.** Sí, exactament. Una vegada que la feature està completada i revisada, es fusiona a develop i s'elimina, mantenint el repositori net i organitzat segons el flux de treball Git Flow.
 
+---
+
+## Hotfix aplicat
+
+**Nota:** Aquest hotfix s'ha aplicat per correcció urgent a la branca master i develop.
+
