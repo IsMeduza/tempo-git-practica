@@ -153,3 +153,403 @@ abfb694 Commit inicial main
 - **Hi apareixen ara els fitxers?** Sí, apareixen.
 - **Per què?** Quan eliminem i recreem la branca develop des de master, la nova branca develop es crea des del punt actual de master. Com que master ja conté els fitxers fitxerMain1.txt i fitxerMain2.txt en el seu historial (commit 86e2ba1), la nova branca develop hereta aquest historial complet. Per tant, develop ara comparteix el mateix historial que master fins al punt on es va crear, incloent tots els commits i fitxers que hi ha en master. Això demostra que quan crees una branca nova, aquesta comença des del commit actual de la branca des de la qual la crees.
 
+## Part 2: Funcionament Git Flow
+
+### 1. Afegir fitxers a develop i crear branca feature
+
+#### Accions realitzades:
+- Afegir fitxers fitDev1.txt i fitDev2.txt a develop.
+- Crear branca de funcionalitat feature-MenuLanding.
+- Afegir index.html a la feature i fer commit.
+
+#### Afegir fitxers a develop:
+```bash
+$ git checkout develop
+$ git add README.md
+$ git commit -m "Documentació Part 1 completada"
+
+$ touch fitDev1.txt fitDev2.txt
+$ git add fitDev1.txt fitDev2.txt
+$ git commit -m "Afegits fitxers de desenvolupament"
+```
+
+#### Crear branca feature i afegir index.html:
+```bash
+$ git checkout -b feature-MenuLanding
+$ touch index.html
+$ git add index.html
+$ git commit -m "Afegit index.html a feature MenuLanding"
+```
+
+#### Comprovació:
+```bash
+$ git log --oneline
+f735b75 Afegit index.html a feature MenuLanding
+7ea98cb Afegits fitxers de desenvolupament
+824eb0c Documentació Part 1 completada
+86e2ba1 Afegits fitxers Main a master
+abfb694 Commit inicial main
+
+$ git status -s
+# (sense canvis pendents)
+
+$ ls
+README.md  fitDev1.txt  fitDev2.txt  fitxerMain1.txt  fitxerMain2.txt  index.html
+
+$ git branch
+  develop
+* feature-MenuLanding
+  master
+```
+
+La branca feature-MenuLanding conté tots els fitxers de develop més el nou index.html. Aquesta és la branca on es desenvoluparà la funcionalitat del menú de landing.
+
+### 2. Crear repositori a GitHub i associar-lo
+
+#### Accions realitzades:
+- Creació de repositori buit a GitHub: `tempo-git-practica`
+- Associació del repositori local amb GitHub
+- Push de totes les branques al remot
+
+#### Associació i push de branques:
+```bash
+# Associar repositori local amb GitHub
+$ git remote add origin https://github.com/IsMeduza/tempo-git-practica.git
+
+# Verificar configuració
+$ git remote -v
+origin  https://github.com/IsMeduza/tempo-git-practica.git (fetch)
+origin  https://github.com/IsMeduza/tempo-git-practica.git (push)
+
+# Pujar totes les branques
+$ git push -u origin feature-MenuLanding
+$ git push -u origin master
+$ git push -u origin develop
+
+# Verificar branques remotes
+$ git branch -r
+  origin/develop
+  origin/feature-MenuLanding
+  origin/master
+```
+
+#### Comprovació:
+```bash
+$ git log --oneline --all --graph --decorate
+* f735b75 (origin/feature-MenuLanding, feature-MenuLanding) Afegit index.html a feature MenuLanding
+* 7ea98cb (HEAD -> develop, origin/develop) Afegits fitxers de desenvolupament
+* 824eb0c Documentació Part 1 completada
+* 86e2ba1 (origin/master, master) Afegits fitxers Main a master
+* abfb694 Commit inicial main
+```
+
+**Resultat:**
+- Totes les branques (master, develop, feature-MenuLanding) estan disponibles a GitHub
+- Cada branca manté el seu propi historial de commits
+- El repositori remot està sincronitzat amb el local
+
+**Preguntes:**
+- **Què apareix al repositori de GitHub?** Les tres branques: master, develop i feature-MenuLanding
+- **Quines branques existeixen?** master (amb fitxerMain1.txt i fitxerMain2.txt), develop (amb fitDev1.txt i fitDev2.txt), i feature-MenuLanding (amb tots els anteriors més index.html)
+- **Quina informació conté cadascuna?** Cada branca conté els commits i fitxers propis del seu historial, seguint el flux de treball Git Flow.
+
+### 3. Pujar totes les branques i crear Pull Request
+
+#### Accions realitzades:
+- Pujar totes les branques a GitHub
+- Crear Pull Request de feature-MenuLanding cap a develop
+- Capturar les opcions disponibles en crear la PR
+
+#### Crear Pull Request:
+1. Anar al repositori a GitHub: https://github.com/IsMeduza/tempo-git-practica
+2. Clicar "Pull requests" > "New pull request"
+3. Configurar:
+   - **Base:** `develop` (branca de destinació)
+   - **Compare:** `feature-MenuLanding` (branca font)
+4. Clicar "Create pull request"
+5. Afegir títol i descripció (opcional)
+6. Clicar "Create pull request"
+
+#### Opcions disponibles en la Pull Request:
+- **Merge pull request:** Fusiona tots els commits de la feature a develop
+- **Squash and merge:** Combina tots els commits en un sol commit
+- **Rebase and merge:** Aplica els commits de la feature sobre develop sense crear un commit de merge
+- **Revert:** Permet desfer el merge si cal
+
+**Resultat:**
+- La PR mostra 1 commit pendent de fusionar
+- No hi ha conflictes amb la branca base
+- El merge es pot realitzar automàticament
+
+### 4. Resoldre PR i eliminar branca feature
+
+#### Accions realitzades:
+- Resoldre la Pull Request fent merge
+- Eliminar la branca feature a GitHub (automàtic després del merge)
+- Actualitzar develop local amb els canvis del merge
+- Eliminar la branca feature localment
+
+#### Resoldre Pull Request:
+1. A GitHub, clicar "Merge pull request"
+2. Confirmar el merge
+3. La branca feature s'elimina automàticament a GitHub
+
+#### Actualitzar develop local i eliminar branca feature:
+```bash
+$ git checkout develop
+$ git pull origin develop
+From https://github.com/IsMeduza/tempo-git-practica
+ * branch            develop    -> FETCH_HEAD
+   7ea98cb..8e4eb65  develop    -> origin/develop
+Updating 7ea98cb..8e4eb65
+Fast-forward
+ index.html | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 index.html
+
+$ git branch -d feature-MenuLanding
+Deleted branch feature-MenuLanding (was f735b75)
+
+$ git branch
+* develop
+  master
+```
+
+#### Comprovació final:
+```bash
+$ git log --oneline --graph --all
+*   8e4eb65 Merge pull request #1 from IsMeduza/feature-MenuLanding
+|\  
+| * f735b75 Afegit index.html a feature MenuLanding
+|/  
+* 7ea98cb Afegits fitxers de desenvolupament
+* 824eb0c Documentació Part 1 completada
+* 86e2ba1 Afegits fitxers Main a master
+* abfb694 Commit inicial main
+
+$ ls
+README.md  fitDev1.txt  fitDev2.txt  fitxerMain1.txt  fitxerMain2.txt  index.html
+```
+
+**Preguntes:**
+- **Què ha passat amb les branques feature i develop?** La branca feature s'ha fusionat a develop mitjançant un merge commit (8e4eb65). Ara develop conté tots els fitxers de la feature, incloent index.html. La branca feature s'ha eliminat tant a GitHub com localment, ja que la seva funcionalitat ja està integrada a develop.
+- **Conceptualment, quan crees una PR és perquè has acabat la teua tasca a la branca feature.** Sí, exactament. Una vegada que la feature està completada i revisada, es fusiona a develop i s'elimina, mantenint el repositori net i organitzat segons el flux de treball Git Flow.
+
+## Part 3: Part Comú - Treball Col·laboratiu
+
+### 5-7. Crear branques feature diferents i resoldre conflictes
+
+#### Accions realitzades:
+- Creació de dues branques feature diferents (feature-Membre1 i feature-Membre2)
+- Modificació del mateix fitxer (fitDev1.txt) per cada membre
+- Resolució de conflictes segons instruccions específiques
+
+#### Creació de branques feature:
+```bash
+# Membre 1 crea la seva feature
+$ git checkout develop
+$ git checkout -b feature-Membre1
+# Modifica fitDev1.txt afegint 10 línies
+# Les línies 3 i 7 són iguals en totes dues features
+$ git add fitDev1.txt
+$ git commit -m "Modificat fitDev1.txt per Membre1"
+$ git push -u origin feature-Membre1
+
+# Membre 2 crea la seva feature (des de develop abans del merge de Membre1)
+$ git checkout develop
+$ git checkout -b feature-Membre2
+# Modifica fitDev1.txt afegint 10 línies diferents
+# Les línies 3 i 7 són iguals (comú)
+$ git add fitDev1.txt
+$ git commit -m "Modificat fitDev1.txt per Membre2"
+$ git push -u origin feature-Membre2
+```
+
+#### Resolució de conflictes:
+```bash
+# Primer: Merge de feature-Membre1 (sense conflictes)
+$ git checkout develop
+$ git merge feature-Membre1
+Updating 51a7874..6eff6e7
+Fast-forward
+ fitDev1.txt | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+$ git push origin develop
+
+# Segon: Merge de feature-Membre2 (amb conflictes)
+$ git merge feature-Membre2
+Auto-merging fitDev1.txt
+CONFLICT (content): Merge conflict in fitDev1.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+# Resoldre conflictes segons instruccions:
+# - Primer conflicte (línies 1-2): Acceptar codi de Membre1
+# - Segon conflicte (línies 4-6): Acceptar codi de Membre2
+# - Tercer conflicte (línies 8-10): Acceptar codi de totes dues
+
+$ git add fitDev1.txt
+$ git commit -m "Resolució de conflictes: combinat canvis de Membre1 i Membre2"
+$ git push origin develop
+```
+
+**Resultat:**
+- Les línies 3 i 7 (comuns) no generen conflicte
+- Les línies diferents generen conflictes que s'han resolt combinant ambdues versions
+- El fitxer final conté elements de totes dues features
+
+### 8. Crear branca release i tag
+
+#### Accions realitzades:
+- Creació de branca release des de develop
+- Creació de tag v1.0 per identificar la versió
+- Merge de release a main i develop
+
+#### Creació de release:
+```bash
+$ git checkout develop
+$ git checkout -b release-v1.0
+$ git push -u origin release-v1.0
+
+# Crear tag
+$ git tag -a v1.0 -m "Versió 1.0 - Release inicial"
+$ git push origin v1.0
+```
+
+#### Merge de release a main i develop:
+```bash
+# Merge a main
+$ git checkout master
+$ git merge release-v1.0
+Updating 86e2ba1..be84232
+Fast-forward
+ README.md   | 337 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ fitDev1.txt |  13 +++
+ fitDev2.txt |  0
+ index.html  |  0
+ 4 files changed, 350 insertions(+)
+
+$ git push origin master
+
+# Merge a develop
+$ git checkout develop
+$ git merge release-v1.0
+Already up to date.
+$ git push origin develop
+```
+
+**Resultat:**
+- Tag v1.0 creat i pujat a GitHub
+- Release mergejat tant a main com a develop
+- Main ara conté tots els canvis de develop
+
+### 9. Incorporar canvis amb rebase
+
+#### Accions realitzades:
+- Creació de dues noves branques feature (feature-MembreA i feature-MembreB)
+- Merge de feature-MembreA a develop
+- Incorporació de canvis de develop a feature-MembreB mitjançant rebase
+
+#### Crear branques feature:
+```bash
+# Membre A crea feature
+$ git checkout develop
+$ git checkout -b feature-MembreA
+$ touch fitxerMembreA.txt
+$ git add fitxerMembreA.txt
+$ git commit -m "Afegit fitxer de Membre A"
+$ git push -u origin feature-MembreA
+
+# Membre B crea feature
+$ git checkout develop
+$ git checkout -b feature-MembreB
+$ touch fitxerMembreB.txt
+$ git add fitxerMembreB.txt
+$ git commit -m "Afegit fitxer de Membre B"
+```
+
+#### Merge de MembreA i rebase de MembreB:
+```bash
+# Merge de feature-MembreA a develop
+$ git checkout develop
+$ git merge feature-MembreA
+Updating be84232..5a9a06c
+Fast-forward
+ fitxerMembreA.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+$ git push origin develop
+
+# Membre B incorpora canvis amb rebase
+$ git checkout feature-MembreB
+$ git pull origin develop  # Actualitzar develop local
+$ git rebase develop
+Rebasing (1/1)
+Successfully rebased and updated refs/heads/feature-MembreB
+```
+
+#### Comprovació del rebase:
+```bash
+$ git log --oneline --graph
+* 229b67c Afegit fitxer de Membre B
+* 5a9a06c Afegit fitxer de Membre A
+* be84232 Resolució de conflictes: combinat canvis de Membre1 i Membre2
+...
+```
+
+**Resultat:**
+- El commit de MembreB apareix després del commit de MembreA
+- L'historial és lineal (sense merge commits)
+- feature-MembreB ara conté els canvis de develop (fitxerMembreA.txt)
+
+**Diferència entre merge i rebase:**
+- **Merge:** Crea un commit de merge, mantenint l'historial paral·lel
+- **Rebase:** Reaplica els commits sobre la branca base, creant un historial lineal
+
+### 10. Crear branca hotfix
+
+#### Accions realitzades:
+- Creació de branca hotfix des de main
+- Realització de correcció urgent
+- Merge de hotfix tant a main com a develop
+
+#### Crear i aplicar hotfix:
+```bash
+# Crear hotfix des de main
+$ git checkout master
+$ git checkout -b hotfix-fix-urgent
+
+# Fer correcció urgent (ex: afegir nota al README)
+$ git add README.md
+$ git commit -m "Hotfix: correcció urgent al README"
+$ git push -u origin hotfix-fix-urgent
+
+# Merge a main
+$ git checkout master
+$ git merge hotfix-fix-urgent
+Updating be84232..acd0fe8
+Fast-forward
+ README.md | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+$ git push origin master
+
+# Merge a develop
+$ git checkout develop
+$ git merge hotfix-fix-urgent
+Merge made by the 'ort' strategy.
+ README.md | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+$ git push origin develop
+```
+
+**Resultat:**
+- Hotfix aplicat tant a main com a develop
+- La correcció urgent està disponible a totes dues branques
+- El flux Git Flow manté la sincronització entre main i develop
+
+**Importància del hotfix:**
+- Els hotfix s'han de mergear sempre a main i develop
+- Són correccions urgents que no poden esperar al proper release
+- Mantenen la consistència entre les branques principals
